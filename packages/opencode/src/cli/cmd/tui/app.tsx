@@ -424,18 +424,6 @@ function App() {
       },
     },
     {
-      title: "Connect provider",
-      value: "provider.connect",
-      suggested: !connected(),
-      slash: {
-        name: "connect",
-      },
-      onSelect: () => {
-        dialog.replace(() => <DialogProviderList />)
-      },
-      category: "Provider",
-    },
-    {
       title: "View status",
       keybind: "status_view",
       value: "opencode.status",
@@ -476,15 +464,6 @@ function App() {
       },
       onSelect: () => {
         dialog.replace(() => <DialogHelp />)
-      },
-      category: "System",
-    },
-    {
-      title: "Open docs",
-      value: "docs.open",
-      onSelect: () => {
-        open("https://opencode.ai/docs").catch(() => {})
-        dialog.clear()
       },
       category: "System",
     },
