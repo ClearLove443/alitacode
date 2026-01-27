@@ -1,9 +1,9 @@
-import { createMemo } from "solid-js"
 import { useLocal } from "@tui/context/local"
-import { DialogSelect } from "@tui/ui/dialog-select"
 import { useDialog } from "@tui/ui/dialog"
+import { DialogSelect } from "@tui/ui/dialog-select"
+import { createMemo } from "solid-js"
 
-export function DialogAgent() {
+export function DialogAgent(props: { onSelect?: (agent: string) => void | Promise<void> }) {
   const local = useLocal()
   const dialog = useDialog()
 
@@ -22,7 +22,13 @@ export function DialogAgent() {
       title="Select agent"
       current={local.agent.current().name}
       options={options()}
-      onSelect={(option) => {
+      onSelect={async (option) => {
+        if (props.onSelect) {
+          await props.onSelect(option.value)
+          dialog.clear()
+          return
+        }
+
         local.agent.set(option.value)
         dialog.clear()
       }}

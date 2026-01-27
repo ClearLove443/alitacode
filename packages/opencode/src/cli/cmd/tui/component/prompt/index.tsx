@@ -31,6 +31,7 @@ import { DialogAlert } from "../../ui/dialog-alert"
 import { useToast } from "../../ui/toast"
 import { useKV } from "../../context/kv"
 import { useTextareaKeybindings } from "../textarea-keybindings"
+import { createAgentSwitchHandler } from "./agent-switch-handler"
 
 export type PromptProps = {
   sessionID?: string
@@ -128,6 +129,18 @@ export function Prompt(props: PromptProps) {
     mode: "normal",
     extmarkToPartIndex: new Map(),
     interrupt: 0,
+  })
+
+  const agentSwitch = createAgentSwitchHandler({
+    sdk,
+    route,
+    local,
+    dialog,
+    toast,
+    promptModelWarning,
+    initialMessage: "help",
+    getInputBox: () => input,
+    setStore,
   })
 
   // Initialize agent/model/variant from last user message when session changes
@@ -491,6 +504,9 @@ export function Prompt(props: PromptProps) {
     if (autocomplete?.visible) return
     if (!store.prompt.input) return
     const trimmed = store.prompt.input.trim()
+
+    if (await agentSwitch(trimmed)) return
+
     if (trimmed === "exit" || trimmed === "quit" || trimmed === ":q") {
       exit()
       return
