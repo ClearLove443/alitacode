@@ -26,6 +26,7 @@ import { EOL } from "os"
 import { WebCommand } from "./cli/cmd/web"
 import { PrCommand } from "./cli/cmd/pr"
 import { SessionCommand } from "./cli/cmd/session"
+import { initializeBinaryEnvironment } from "./util/binary-init"
 
 process.on("unhandledRejection", (e) => {
   Log.Default.error("rejection", {
@@ -67,8 +68,7 @@ const cli = yargs(hideBin(process.argv))
       })(),
     })
 
-    process.env.AGENT = "1"
-    process.env.OPENCODE = "1"
+    await initializeBinaryEnvironment()
 
     Log.Default.info("opencode", {
       version: Installation.VERSION,

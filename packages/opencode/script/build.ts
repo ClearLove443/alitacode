@@ -101,6 +101,9 @@ const targets = singleFlag
 
 await $`rm -rf dist`
 
+// 生成嵌入文件到二进制中（在构建开始前执行一次）
+await $`bun run script/generate-embedded-files.ts`
+
 const binaries: Record<string, string> = {}
 if (!skipInstall) {
   await $`bun install --os="*" --cpu="*" @opentui/core@${pkg.dependencies["@opentui/core"]}`
@@ -108,7 +111,7 @@ if (!skipInstall) {
 }
 for (const item of targets) {
   const name = [
-    pkg.name,
+    "alita",
     // changing to win32 flags npm for some reason
     item.os === "win32" ? "windows" : item.os,
     item.arch,
@@ -138,9 +141,9 @@ for (const item of targets) {
       //@ts-ignore (bun types aren't up to date)
       autoloadTsconfig: true,
       autoloadPackageJson: true,
-      target: name.replace(pkg.name, "bun") as any,
-      outfile: `dist/${name}/bin/opencode`,
-      execArgv: [`--user-agent=opencode/${Script.version}`, "--use-system-ca", "--"],
+      target: name.replace("alita", "bun") as any,
+      outfile: `dist/${name}/bin/alita`,
+      execArgv: [`--user-agent=alita/${Script.version}`, "--use-system-ca", "--"],
       windows: {},
     },
     entrypoints: ["./src/index.ts", parserWorker, workerPath],
