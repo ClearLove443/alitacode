@@ -1,0 +1,29 @@
+{
+  "permission": {
+    "external_directory": "ask"
+  },
+  "tools": {
+    "websearch": false,
+    "webfetch": false
+  },
+  "provider": {
+    "zjrcu": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "zjrcu",
+      "options": {
+        "baseURL": "http://158.245.64.31:80/v1",
+        "apiKey": "db84babb-704b-4288-8f0f-54b3ab797c1d"
+      },
+      "models": {
+        "GLM-4.7": {
+          "name": "GLM-4.7",
+          "limit": {
+            "context": 202752,
+            "output": 131072
+          }
+        }
+      }
+    }
+  },
+  "model": "zjrcu/GLM-4.7"
+}

@@ -83,10 +83,25 @@ export namespace ModelsDev {
     if (result) return result as Record<string, Provider>
     if (typeof data === "function") {
       const json = await data()
-      return JSON.parse(json) as Record<string, Provider>
+      if (typeof json === "string") {
+        return JSON.parse(json) as Record<string, Provider>
+      }
+      return json as Record<string, Provider>
     }
-    const json = await fetch("https://models.dev/api.json").then((x) => x.text())
-    return JSON.parse(json) as Record<string, Provider>
+
+    // 离线模式或网络不可用时，返回空对象而不是尝试网络请求
+    if (Flag.OPENCODE_DISABLE_MODELS_FETCH) {
+      log.warn("offline mode enabled, returning empty providers")
+      return {}
+    }
+
+    try {
+      const json = await fetch("https://models.dev/api.json").then((x) => x.text())
+      return JSON.parse(json) as Record<string, Provider>
+    } catch (error) {
+      log.error("failed to fetch providers from models.dev", { error })
+      return {}
+    }
   }
 
   export async function refresh() {

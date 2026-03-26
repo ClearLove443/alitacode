@@ -3,12 +3,11 @@
 import fs from "fs"
 import path from "path"
 
-// 读取 .alita-core 目录下的所有文件并生成嵌入代码
-function generateEmbeddedFiles(): { files: Record<string, string>, config: string } {
+// 读取 .alita 目录下的所有文件并生成嵌入代码
+function generateEmbeddedFiles(): { files: Record<string, string> } {
   const files: Record<string, string> = {}
-  let config = "{}"
 
-  // 递归读取 .alita-core 目录
+  // 递归读取 .alita 目录
   function readDirectory(dir: string, base: string = ""): void {
     if (!fs.existsSync(dir)) return
 
@@ -29,58 +28,35 @@ function generateEmbeddedFiles(): { files: Record<string, string>, config: strin
     }
   }
 
-  // 读取 .alita-core
-  readDirectory(".alita-core")
+  // 读取 .alita
+  readDirectory(".alita")
 
-  // 读取 opencode.jsonc
-  if (fs.existsSync("opencode.jsonc")) {
-    config = fs.readFileSync("opencode.jsonc", "utf-8")
-  }
-
-  // 读取 AGENTS.md
-  if (fs.existsSync("AGENTS.md")) {
-    files["AGENTS.md"] = fs.readFileSync("AGENTS.md", "utf-8")
-  }
-
-  return { files, config }
+  return { files }
 }
 
 // 生成最终的 embedded-files.ts
 function generateEmbeddedFilesTS(): void {
-  const { files, config } = generateEmbeddedFiles()
+  const { files } = generateEmbeddedFiles()
 
   const filesJSON = JSON.stringify(files, null, 2)
-  const configJSON = JSON.stringify(config)
 
   const content = `import fs from "fs"
 import path from "path"
 
-// 嵌入的 .alita-core 文件内容
-const EMBEDDED_ALITA_CORE_FILES: Record<string, string> = ${filesJSON}
-
-// 嵌入的 opencode.jsonc 文件内容
-const EMBEDDED_OPENCODE_CONFIG = ${configJSON}
+// 嵌入的 .alita 文件内容
+const EMBEDDED_ALITA_FILES: Record<string, string> = ${filesJSON}
 
 /**
- * 读取嵌入的 .alita-core 文件内容
+ * 读取嵌入的 .alita 文件内容
  */
-export function getAlitaCoreFiles(): Record<string, string> {
-  return EMBEDDED_ALITA_CORE_FILES
-}
-
-/**
- * 读取嵌入的 opencode.jsonc 文件内容
- */
-export function getOpencodeConfig(): string {
-  return EMBEDDED_OPENCODE_CONFIG
+export function getAlitaFiles(): Record<string, string> {
+  return EMBEDDED_ALITA_FILES
 }
 `
 
   fs.writeFileSync("src/util/embedded-files.ts", content, "utf-8")
   console.log("Generated embedded-files.ts")
-  console.log(`Embedded ${Object.keys(files).length} files from .alita-core and AGENTS.md`)
-  console.log(`Embedded opencode.jsonc: ${config !== "{}" ? "yes" : "no"}`)
-  console.log(`Embedded AGENTS.md: ${files["AGENTS.md"] ? "yes" : "no"}`)
+  console.log(`Embedded ${Object.keys(files).length} files from .alita`)
 }
 
 // 运行生成
