@@ -39,8 +39,8 @@ export namespace Skill {
     }),
   )
 
-  const OPENCODE_SKILL_GLOB = new Bun.Glob("{skill,skills}/**/SKILL.md")
   const CLAUDE_SKILL_GLOB = new Bun.Glob("skills/**/SKILL.md")
+  const ALITA_SKILL_GLOB = new Bun.Glob("{skill,skills}/**/SKILL.md")
 
   export const state = Instance.state(async () => {
     const skills: Record<string, Info> = {}
@@ -76,6 +76,39 @@ export namespace Skill {
       }
     }
 
+    // Scan .alita/skills/ directories (highest priority)
+    const alitaDirs = await Array.fromAsync(
+      Filesystem.up({
+        targets: [".alita"],
+        start: Instance.directory,
+        stop: Instance.worktree,
+      }),
+    )
+    // Also include global ~/.alita/skills/
+    const globalAlita = `${Global.Path.home}/.alita`
+    if (await Filesystem.isDir(globalAlita)) {
+      alitaDirs.push(globalAlita)
+    }
+
+    for (const dir of alitaDirs) {
+      const matches = await Array.fromAsync(
+        ALITA_SKILL_GLOB.scan({
+          cwd: dir,
+          absolute: true,
+          onlyFiles: true,
+          followSymlinks: true,
+          dot: true,
+        }),
+      ).catch((error) => {
+        log.error("failed .alita directory scan for skills", { dir, error })
+        return []
+      })
+
+      for (const match of matches) {
+        await addSkill(match)
+      }
+    }
+
     // Scan .claude/skills/ directories (project-level)
     const claudeDirs = await Array.fromAsync(
       Filesystem.up({
@@ -108,18 +141,6 @@ export namespace Skill {
         for (const match of matches) {
           await addSkill(match)
         }
-      }
-    }
-
-    // Scan .opencode/skill/ directories
-    for (const dir of await Config.directories()) {
-      for await (const match of OPENCODE_SKILL_GLOB.scan({
-        cwd: dir,
-        absolute: true,
-        onlyFiles: true,
-        followSymlinks: true,
-      })) {
-        await addSkill(match)
       }
     }
 
