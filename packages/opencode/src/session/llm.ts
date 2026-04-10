@@ -201,7 +201,7 @@ export namespace LLM {
         ...(isCodex
           ? {
               originator: "opencode",
-              "User-Agent": `opencode/${Installation.VERSION} (${os.platform()} ${os.release()}; ${os.arch()})`,
+              "User-Agent": `alita/${Installation.VERSION} (${os.platform()} ${os.release()}; ${os.arch()})`,
               session_id: input.sessionID,
             }
           : undefined),
@@ -214,7 +214,7 @@ export namespace LLM {
             }
           : input.model.providerID !== "anthropic"
             ? {
-                "User-Agent": `opencode/${Installation.VERSION}`,
+                "User-Agent": `alita/${Installation.VERSION}`,
               }
             : undefined),
         ...input.model.headers,

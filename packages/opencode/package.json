@@ -9,6 +9,9 @@
     "typecheck": "tsgo --noEmit",
     "test": "bun test",
     "build": "bun run script/build.ts",
+    "build:install": "bun run script/build.ts --install",
+    "package:windows": "bun run script/package-windows.ts",
+    "install:windows": "bun run script/install-windows.ts",
     "dev": "bun run --conditions=browser ./src/index.ts",
     "random": "echo 'Random script updated at $(date)' && echo 'Change queued successfully' && echo 'Another change made' && echo 'Yet another change' && echo 'One more change' && echo 'Final change' && echo 'Another final change' && echo 'Yet another final change'",
     "clean": "echo 'Cleaning up...' && rm -rf node_modules dist",
@@ -18,7 +21,7 @@
     "deploy": "echo 'Deploying application...' && bun run build && echo 'Deployment completed successfully'"
   },
   "bin": {
-    "opencode": "./bin/opencode"
+    "alita": "./bin/opencode"
   },
   "exports": {
     "./*": "./src/*.ts"
@@ -44,7 +47,8 @@
     "typescript": "catalog:",
     "vscode-languageserver-types": "3.17.5",
     "why-is-node-running": "3.2.2",
-    "zod-to-json-schema": "3.24.5"
+    "zod-to-json-schema": "3.24.5",
+    "@types/js-yaml": "^4.0.9"
   },
   "dependencies": {
     "@actions/core": "1.11.1",
@@ -102,6 +106,7 @@
     "hono": "catalog:",
     "hono-openapi": "catalog:",
     "ignore": "7.0.5",
+    "js-yaml": "^4.1.0",
     "jsonc-parser": "3.3.1",
     "minimatch": "10.0.3",
     "open": "10.1.2",
